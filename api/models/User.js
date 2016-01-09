@@ -12,7 +12,11 @@ module.exports = {
       type: 'string',
       email: true
     },
-    password: 'string'
+    password: 'string',
+    tanks: {
+      collection: 'tank',
+      via: 'owner'
+    }
   }
 };
 

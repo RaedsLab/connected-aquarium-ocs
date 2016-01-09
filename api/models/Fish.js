@@ -12,7 +12,11 @@ module.exports = {
     country: 'string',
     latitude: 'float',
     longitude: 'float',
-    code: 'string'
+    code: 'string',
+    tanks: {
+      collection: 'tank',
+      via: 'fishInside'
+    }
   }
 };
 

@@ -14,6 +14,13 @@ module.exports = {
     state: {
       type: 'string',
       enum: ['online', 'offline', 'unreachable']
+    },
+    owner: {
+      model: 'user'
+    },
+    fishInside: {
+      collection: 'fish',
+      via: 'tanks'
     }
   }
 };
