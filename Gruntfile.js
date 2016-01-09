@@ -14,6 +14,7 @@
 
 module.exports = function(grunt) {
 
+	grunt.registerTask('heroku:production', 'clean less mincss uglify');
 
 	// Load the include-all library in order to require all of our grunt
 	// configurations and task registrations dynamically.
