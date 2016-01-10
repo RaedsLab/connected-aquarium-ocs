@@ -1,14 +1,51 @@
 <h1>Admin panel <%= req.query.id %> <span id="userEmail"></span></h1>
 
+<button onclick="logout()" type="button">Logout</button>
+
+<h3>Tank list</h3>
+
+<!-- List of owned tanks -->
+<div id="tankMsg"></div>
+<div>
+  <ul id="tankList"></ul>
+</div>
+<!-- /List of owned tanks -->
+
+
+<!-- Add a tank -->
+<div class="addTank">
+  <form id="addTankForm">
+    <label for="label">Label</label><br>
+    <input id="label" type="text" placeholder="Give your tank a name">
+    <br>
+    <label for="latitude">Latitude</label><br>
+    <input id="latitude" type="number" placeholder="00.000">
+    <br>
+    <label for="longitude">Longitude</label><br>
+    <input id="longitude" type="number" placeholder="00.000">
+    <br>
+    <button onclick="" id="btnAddTank" type="button">Add</button>
+  </form>
+</div>
+<!-- /Add a tank -->
+
+<!-- List of fish in tank -->
+<h3>Fish in tank list</h3>
+<div>
+  <ul id="fishList"></ul>
+</div>
+<!-- /List of fish in tank -->
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script>
   /**
    * Logged user
    * */
   var user = null;
 
-  /*
+  /**
    Get URL Params
    */
   var getUrlParameter = function getUrlParameter(sParam) {
@@ -26,7 +63,27 @@
     }
   };
 
-  /*
+
+  /**
+   * Check if cookie exists
+   * if exists check with URL param ID
+   */
+  $(document).ready(function () {
+    var loginCookie = $.cookie("userId");
+    if (loginCookie != undefined) {
+      if (loginCookie != getUrlParameter('id')) {
+        // redirect to proper panel
+        window.location.replace("/panel?id=" + loginCookie);
+
+      }
+    } else {
+      // redirect to login
+      window.location.replace("/");
+    }
+  });
+
+
+  /**
    * Get user by id
    */
   function getUserById(id) {
@@ -41,7 +98,7 @@
     return user['responseJSON'];
   }
 
-  /*
+  /**
    Check if id is present
    if not redirect to login
    */
@@ -55,8 +112,51 @@
     if (user == undefined) {
       window.location.replace("/");
     }
-    //alert((user));
+
+    /**
+     * Set the panel elements
+     */
     $('#userEmail').html(user.email);
+    if (user.tanks.length == 0) {
+      $("#tankMsg").html("You don't have any configured fish-tanks.")
+    } else {
+      user.tanks.forEach(function (entry) {
+        $("#tankList").append("<li class='tank' id='" + entry.id + "'>" + entry.label + " [" + entry.state + "] </li>");
+      });
+    }
+  }
+
+  /**
+   * On tank click => get list of fish
+   */
+  $(".tank").on("click", function () {
+    var tankId = $(this).attr("id");
+    $("#fishList").html(""); // empty the list
+
+    var xhrTankResp = $.ajax({
+      url: "/tank/" + tankId,
+      async: false,
+      dataType: 'json',
+      success: function (data) {
+        return data;
+      }
+    });
+    var tank = xhrTankResp['responseJSON'];
+    tank.fishInside.forEach(function (fish) {
+      $("#fishList").append("<li class='fishInTank' id='" + fish.id + "'>" + fish.name + " [" + fish.code + "] </li>");
+    });
+  });
+
+
+  /**
+   *
+   * Deletes userId cookie
+   * Redirects to login page
+   */
+  function logout() {
+    $.removeCookie("userId");
+    /// redirect to login
+    window.location.replace("/");
   }
 
 </script>

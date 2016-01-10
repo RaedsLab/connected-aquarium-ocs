@@ -18,7 +18,22 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
 <script>
+  /**
+   * Check if cookie exists
+   * if exists redirect to panel
+   */
+  $(document).ready(function () {
+    var loginCookie = $.cookie("userId");
+    if (loginCookie != undefined) {
+      // redirect
+      window.location.replace("/panel?id=" + loginCookie);
+    }
+  });
+
+
   function userLogin() {
     var email = $('#email').val();
     var password = $('#pwd').val();
@@ -26,7 +41,12 @@
     $.get("/user", {email: email, password: password})
       .done(function (data) {
         if ((data[0] != undefined)) {
-          alert("Good login")
+          //alert("Good login");
+
+          //Set cookie
+          $.cookie("userId", data[0].id);
+          // redirect
+          window.location.replace("/panel?id=" + data[0].id);
         } else {
           $("#loginAlert").html("Bad email or password.");
           $("#loginAlert").show();
@@ -37,6 +57,4 @@
         $("#loginAlert").show();
       });
   }
-
-
 </script>
