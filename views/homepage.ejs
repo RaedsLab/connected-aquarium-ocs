@@ -1,21 +1,29 @@
-<h1>Home Page</h1>
+<%- partial('./partials/logincss.ejs') %>
+<%- partial('./partials/loginjs.ejs') %>
 
+<div class="login">
+  <div class="login-screen">
+    <div class="app-title">
+      <h1>Login</h1>
+    </div>
 
-<h2>Login</h2>
-<div class="row">
-  <div class="col-lg-3 col-lg-offset-4">
-    <div id="loginAlert" hidden="hidden" class="alert alert-danger" role="alert"></div>
-    <form id="loginForm">
-      <label for="email">Email</label><br>
-      <input id="email" type="email" name="email" placeholder="user@user.fr">
-      <br>
-      <label for="pwd">Passowd</label><br>
-      <input id="pwd" type="password" name="pwd" placeholder="********">
-      <br>
-      <button onclick="userLogin()" id="btnLogin" type="button">Login</button>
-    </form>
+    <div class="login-form">
+      <div class="control-group">
+        <input id="email" type="email" name="user" placeholder="user@user.fr">
+        <label class="login-field-icon fui-user" for="login-name"></label>
+      </div>
+
+      <div class="control-group">
+        <input id="pwd" type="password" name="pwd" placeholder="********">
+        <label class="login-field-icon fui-lock" for="login-pass"></label>
+      </div>
+
+      <a onclick="userLogin()" id="btnLogin" class="btn btn-primary btn-large btn-block" href="#">login</a>
+    </div>
   </div>
 </div>
+
+
 <script>
   /**
    * Check if cookie exists
