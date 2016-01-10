@@ -1,1 +1,42 @@
 <h1>Home Page</h1>
+
+
+<h2>Login</h2>
+<div class="row">
+  <div class="col-lg-3 col-lg-offset-4">
+    <div id="loginAlert" hidden="hidden" class="alert alert-danger" role="alert"></div>
+    <form id="loginForm">
+      <label for="email">Email</label><br>
+      <input id="email" type="email" name="email" placeholder="user@user.fr">
+      <br>
+      <label for="pwd">Passowd</label><br>
+      <input id="pwd" type="password" name="pwd" placeholder="********">
+      <br>
+      <button onclick="userLogin()" id="btnLogin" type="button">Login</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+  function userLogin() {
+    var email = $('#email').val();
+    var password = $('#pwd').val();
+
+    $.get("/user", {email: email, password: password})
+      .done(function (data) {
+        if ((data[0] != undefined)) {
+          alert("Good login")
+        } else {
+          $("#loginAlert").html("Bad email or password.");
+          $("#loginAlert").show();
+        }
+      })
+      .fail(function () {
+        $("#loginAlert").html("Oups! Server error!");
+        $("#loginAlert").show();
+      });
+  }
+
+
+</script>

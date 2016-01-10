@@ -1,0 +1,62 @@
+<h1>Admin panel <%= req.query.id %> <span id="userEmail"></span></h1>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+  /**
+   * Logged user
+   * */
+  var user = null;
+
+  /*
+   Get URL Params
+   */
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+      sURLVariables = sPageURL.split('&'),
+      sParameterName,
+      i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+      sParameterName = sURLVariables[i].split('=');
+
+      if (sParameterName[0] === sParam) {
+        return sParameterName[1] === undefined ? true : sParameterName[1];
+      }
+    }
+  };
+
+  /*
+   * Get user by id
+   */
+  function getUserById(id) {
+    var user = $.ajax({
+      url: "/user/" + id,
+      async: false,
+      dataType: 'json',
+      success: function (data) {
+        return data;
+      }
+    });
+    return user['responseJSON'];
+  }
+
+  /*
+   Check if id is present
+   if not redirect to login
+   */
+  var userId = getUrlParameter('id');
+  if (userId == undefined) {
+    /// redirect to login
+    window.location.replace("/");
+    alert("No id");
+  } else {
+    user = getUserById(userId);
+    if (user == undefined) {
+      window.location.replace("/");
+    }
+    //alert((user));
+    $('#userEmail').html(user.email);
+  }
+
+</script>

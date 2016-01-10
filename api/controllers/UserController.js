@@ -6,6 +6,11 @@
  */
 
 module.exports = {
-	
+  login: function (req, res) {
+    console.log("Hi there");
+    res.json(req.allParams());
+    //    return res.redirect("http://www.sayonara.com");
+  }
+
 };
 
