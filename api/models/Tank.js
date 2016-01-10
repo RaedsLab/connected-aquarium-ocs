@@ -13,7 +13,8 @@ module.exports = {
     longitude: 'float',
     state: {
       type: 'string',
-      enum: ['online', 'offline', 'unreachable']
+      enum: ['online', 'offline', 'unreachable', 'pending'],
+      defaultsTo: 'pending'
     },
     owner: {
       model: 'user'
@@ -21,6 +22,10 @@ module.exports = {
     fishInside: {
       collection: 'fish',
       via: 'tanks'
+    },
+    code: {
+      type: 'string',
+      required: true
     }
   }
 };
