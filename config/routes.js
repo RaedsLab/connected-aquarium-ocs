@@ -47,7 +47,10 @@ module.exports.routes = {
    ***************************************************************************/
 
   '/panel': {
-    view: 'panel'
+    view: 'panel',
+    locals: {
+      layout: 'panelTheme'
+    }
   }
 
 };

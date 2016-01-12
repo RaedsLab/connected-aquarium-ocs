@@ -1,68 +1,154 @@
-<style>
-  /**
-  * Map Examples Specific
-  */
-  .smallmap {
-    width: 350px;
-    height: 256px;
-    border: 1px solid #ccc;
-  }
+<!-- Your Page Content Here -->
+<div class="row">
+  <!--TANK LISt-->
 
-  #map {
-    background: #7391ad;
-    width: 500px;
-  }
+  <div class="col-md-6">
+    <div style="min-height: 390px;" class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">My Aquariums</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i
+              class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div id="tankMsg"></div>
+        <div class="table-responsive">
+          <table class="table no-margin">
+            <thead>
+            <tr>
+              <th>Code</th>
+              <th>Label</th>
+              <th>Status</th>
+              <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody id="tankList">
+            <!--- TANK  LOOP -->
+            <!--- TANK  LOOP -->
+            </tbody>
+          </table>
+        </div>
 
-  #map {
-    border: 0;
-    height: 250px;
-  }
+      </div><!-- /.box-body -->
+      <div class="box-footer">
+        <a id="addModal" class="btn btn-app" data-toggle="modal" data-target="#addTankModal">
+          <i class="fa fa-edit"></i> Add
+        </a>
+        <a class="btn btn-app">
+          <i class="fa fa-repeat"></i> Refresh
+        </a>
+      </div><!-- /.box-footer-->
+    </div>
+  </div>
 
-</style>
-
-
-<h1>Admin panel <%= req.query.id %> <span id="userEmail"></span></h1>
-
-<button onclick="logout()" type="button">Logout</button>
-
-<h3>Tank list</h3>
-
-<!-- List of owned tanks -->
-<div id="tankMsg"></div>
-<div>
-  <ul id="tankList"></ul>
+  <!-- MAP  -->
+  <div class="col-md-6">
+    <!-- MAP HERE -->
+    <div class="box box-success">
+      <div class="box-header with-border">
+        <h3 class="box-title">My Fish | Map</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body no-padding">
+        <div class="pad">
+          <!-- Map will be created here -->
+          <div id="world-map-markers" style="height: 325px;">
+          </div>
+        </div>
+      </div><!-- /.box-body -->
+    </div>
+  </div>
 </div>
-<!-- /List of owned tanks -->
+<!-- MODAL ADD TANK -->
+<%- partial('./partials/panel/addTankModal.ejs') %>
 
 
-<!-- Add a tank -->
-<div class="addTank">
-  <form id="addTankForm">
-    <label for="code">Code</label><br>
-    <input required="required" id="tankCode" type="text" placeholder="The ID code on your tank">
-    <br>
-    <label for="label">Label</label><br>
-    <input required="required" id="tankLabel" type="text" placeholder="Give your tank a name">
-    <br><br>
-    <label for="latitude">Latitude</label>
-    <input required="required" id="tankLatitude" type="text" placeholder="0.0">
+<div class="row">
+  <!-- FishList  -->
+  <div class="col-md-6">
 
-    <label for="longitude">Longitude</label>
-    <input required="required" id="tankLongitude" type="text" placeholder="0.0">
-    <br>
-    <div id="map" class="smallmap"></div>
-    <br>
-    <button onclick="addATank()" id="btnAddTank" type="button">Add</button>
-  </form>
+
+    <div id="boxFish" class="box collapsed-box">
+      <div class="box-header with-border">
+        <h3 class="box-title">My Fish | <span id="tankNameSelect"></span></h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i
+              class="fa fa-minus"></i></button>
+        </div>
+      </div>
+
+      <div class="box-body">
+        <div class="table-responsive">
+          <table class="table no-margin">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Native</th>
+              <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody id="fishList">
+
+            </tbody>
+          </table>
+        </div>
+      </div><!-- /.box-body -->
+      <div class="box-footer">
+        <div class="row">
+          <div class="col-md-6">
+            <a class="btn btn-app" data-toggle="modal" data-target="#addTankModal">
+              <i class="fa fa-edit"></i> Add
+            </a>
+          </div>
+          <div class="col-md-6">
+
+          </div>
+        </div>
+
+      </div><!-- /.box-footer-->
+    </div>
+
+
+  </div>
+
+  <div class="col-md-6">
+
+    <div id="aquariumData" class="box collapsed-box">
+      <div class="box-header with-border">
+        <h3 id="tankNameDataBox" class="box-title">AQUARIUM_NAME</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i
+              class="fa fa-minus"></i></button>
+        </div>
+      </div>
+
+      <div class="box-body">
+        <div class="col-md-6">
+          <p>Current local temperature</p>
+          <!--- TEMPERATURE courrante -->
+          <input type="text"
+                 data-readOnly=true
+                 data-width="120"
+                 value="0"
+                 class="dialTemp"
+                 data-fgColor="#F56954"
+                 data-skin="tron"
+                 data-max=70
+                 data-angleOffset=-125
+                 data-angleArc=250
+          >
+        </div>
+      </div><!-- /.box-body -->
+    </div>
+
+  </div>
+
+
 </div>
-<!-- /Add a tank -->
 
-<!-- List of fish in tank -->
-<h3>Fish in tank list</h3>
-<div>
-  <ul id="fishList"></ul>
-</div>
-<!-- /List of fish in tank -->
 
 <script>
   /**
@@ -90,7 +176,6 @@
 
   var userId = getUrlParameter('id');
 
-
   /**
    *
    * Deletes userId cookie
@@ -102,12 +187,16 @@
     window.location.replace("/");
   }
 
-
   /**
    * Check if cookie exists
    * if exists check with URL param ID
    */
   $(document).ready(function () {
+
+    /*** HIDE */
+    $('#boxFish').hide();
+    $('#aquariumData').hide();
+
     var loginCookie = $.cookie("userId");
     if (loginCookie != undefined) {
       if (loginCookie != userId) {
@@ -133,10 +222,21 @@
         /**
          * Set the panel elements
          */
-        $('#userEmail').html(user.email);
+          //$('#userEmail').html(user.email);
+        $(".userEmailDisplay").html(user.email);
 
-        /**INIT MAP JS **/
-        init()
+
+        var mapInitOnce = false;
+        $('#addTankModal').on('shown.bs.modal', function (e) {
+          // do something...
+          /**
+           * INIT MAP Singleton
+           * */
+          if (!mapInitOnce) {
+            init();
+            mapInitOnce = true;
+          }
+        });
         /**
          * Update user tank list
          * */
@@ -170,6 +270,9 @@
    * Get all user tanks
    * */
   function getAllUserTanks() {
+
+    var tankMapPoints = new Array();
+
     $("#tankList").html("");
     $("#tankMsg").html("");
 
@@ -178,11 +281,38 @@
       $("#tankMsg").html("You don't have any configured fish-tanks.")
     } else {
       user.tanks.forEach(function (entry) {
-          $("#tankList").append("<li onclick='updateFishList(this)' class='tank' id='" + entry.id + "'>" + entry.label + " [" + entry.state + "] " +
-            "<button onclick='deleteFishTank(this)' class='deleteTank' id='" + entry.id + "'>[X]</button> </li>");
+
+          /**
+           * SET MAP points
+           * */
+          var tmpCountryName = getCountryByLatLon(entry.latitude, entry.longitude);
+
+          var tmpPoint = {
+            latLng: [entry.latitude, entry.longitude],
+            name: tmpCountryName
+          };
+
+          tankMapPoints.push(tmpPoint); // push to array
+
+          var statecolorClass;
+          switch (entry.state) {
+            case "online":
+              statecolorClass = "label-success";
+              break;
+            case "offline":
+              statecolorClass = "label-danger";
+              break;
+            default:
+              statecolorClass = "label-warning";
+          }
+          var tankRow = "<tr><td onclick='updateFishList(this)' class='tank' id='" + entry.id + "' id='ankCode'><a>" + entry.code + "</a></td><td>" + entry.label + "</td><td><span class='label " + statecolorClass + "'>" + entry.state + "</span></td><td>";
+          tankRow += "<a onclick='deleteFishTank(this)' id='" + entry.id + "' class='btn btn-xs btn-danger btn-flat deleteTank'>Delete</a></td></tr>";
+
+          $("#tankList").append(tankRow);
         }
       );
     }
+    initMap(tankMapPoints);
   }
 
   /**
@@ -200,15 +330,46 @@
       }
     });
     var tank = xhrTankResp['responseJSON'];
+
+    $("#tankNameSelect").html(tank.label);
+    $("#tankNameDataBox").html(tank.label);
+
+    /*********/
+
+    /**
+     *
+     * SET DATA BOX VALUES
+     * */
+
+    $(".dialTemp").knob();
+    $(".dialTemp").val(30);
+
+
+    /*********/
+
+
     if (tank.fishInside != undefined) {
       tank.fishInside.forEach(function (fish) {
-        $("#fishList").append("<li class='fishInTank' id='" + fish.id + "'>" + fish.name + " [" + fish.code + "] </li>");
+        var fishListString = "<tr><td class='fishInTank' >" + fish.name + "</td><td><span class='label label-warning'>Pending</span></td>";
+        fishListString += "<td><a id='" + fish.id + "' class='btn btn-xs btn-danger btn-flat'>Remove</a></td></tr>";
+
+        $("#fishList").append(fishListString);
       });
+
     } else {
       $("#fishList").html("You don't have any fish yet.");
     }
 
+
+    /**
+     * REVEALE the 2 Boxes */
+    $('#boxFish').show();
+    $('#aquariumData').show();
+    $('#boxFish').removeClass('collapsed-box');
+    $('#aquariumData').removeClass('collapsed-box');
+
   }
+
 
   /**
    * On tank click => get list of fish
@@ -230,7 +391,6 @@
         $("#fishList").html(""); // empty the fish list
       }
     });
-
   }
 
   /**
@@ -239,7 +399,7 @@
    * */
   function addATank() {
     $("#tankMsg").html("");
-    
+
     var code = $("#tankCode").val();
     var label = $("#tankLabel").val();
     var latitude = $("#tankLatitude").val();
@@ -255,7 +415,44 @@
       });
   }
 
+
+  /**
+   * INIT MAP
+   * @param : [] of {latLng: [43.73, 7.41], name: 'Monaco'},
+   */
+  function initMap(points) {
+    $('#world-map-markers').vectorMap({
+      map: 'world_mill_en',
+      scaleColors: ['#C8EEFF', '#0071A4'],
+      normalizeFunction: 'polynomial',
+      hoverOpacity: 0.7,
+      hoverColor: false,
+      markerStyle: {
+        initial: {
+          fill: '#F8E23B',
+          stroke: '#383f47'
+        }
+      },
+      backgroundColor: '#383f47',
+      markers: points
+    });
+  }
+
+
+  /**
+   * Get country by lat,lon
+   */
+  function getCountryByLatLon(lat, lon) {
+    var countryResp = $.ajax({
+      url: "http://ws.geonames.org/countryCode?lat=" + lat + "&lng=" + lon + "&username=aquaocs&type=JSON",
+      async: false,
+      dataType: 'json',
+      success: function (data) {
+        return data;
+      }
+    });
+    var ctrName = JSON.parse(countryResp.responseText);
+    return ctrName.countryName;
+  }
+
 </script>
-
-
-<%- partial('./partials/paneljs.ejs') %>
