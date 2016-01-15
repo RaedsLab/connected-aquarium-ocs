@@ -1,3 +1,3 @@
 # aqua-server
 
-a [Sails](http://sailsjs.org) application
+a cool [Sails](http://sailsjs.org) application
