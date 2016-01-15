@@ -451,8 +451,11 @@
         return data;
       }
     });
-    var ctrName = JSON.parse(countryResp.responseText);
-    return ctrName.countryName;
+    if (countryResp.responseText != undefined && countryResp.responseText != null) {
+      var ctrName = JSON.parse(countryResp.responseText);
+      return ctrName.countryName;
+    }
+    return "";
   }
 
 </script>
