@@ -5,14 +5,13 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-
 module.exports = {
 
   light: function (req, res) {
     var lightResp = new Object();
 
     if (req.query.lat == undefined || req.query.lng == undefined) {
-      response["status"] = "error";
+      lightResp["status"] = "error";
       return res.json(lightResp);
     }
 
@@ -74,4 +73,3 @@ module.exports = {
   }
 
 };
-
