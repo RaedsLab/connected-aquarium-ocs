@@ -7,6 +7,45 @@
 
 module.exports = {
 
+  addFish: function (req, res) {
+    var resp = new Object();
+
+    if (req.query.tankCode == undefined || req.query.fishTag == undefined) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
+
+    if (req.query.tankCode == null || req.query.fishTag == null) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
+
+
+    Tank.findOne({code: req.query.tankCode}).exec(function findOneCB(err, tank) {
+
+      //Tank not found
+      if (tank == undefined || err != null) {
+        resp["status"] = "error";
+        return res.json(resp);
+      }
+
+      // Find fish
+      Fish.findOne({code: req.query.fishTag}).exec(function findOneCB(err, fish) {
+
+        //Fish not found
+        if (fish == undefined || err != null) {
+          resp["status"] = "error";
+          return res.json(resp);
+        }
+
+        tank.fishInside.push(fish);
+        resp["status"] = "OK";
+        return res.json(resp);
+      });
+    });
+  },
+
+
   light: function (req, res) {
     var lightResp = new Object();
 
@@ -18,7 +57,7 @@ module.exports = {
     if (req.query.lat != null && req.query.lng != null) {
 
       /// Check if numbers
-      if (isNaN(req.query.lat) || isNaN(req.query.lng)) {
+      if (isNaN(req.query.lat) && isNaN(req.query.lng)) {
         lightResp["status"] = "error";
       } else {
         // all is good
@@ -49,7 +88,7 @@ module.exports = {
         var timeAndDate = new Date();
         //  var moonData = SunCalc.getMoonPosition(/*Date*/ timeAndDate, /*Number*/ req.query.lat, /*Number*/ req.query.lng);
 
-	var SunCalc = require('suncalc');
+        var SunCalc = require('suncalc');
 
         var lightResp = {
           'lightStart': lightStart,

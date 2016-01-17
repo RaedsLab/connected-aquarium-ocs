@@ -13,6 +13,7 @@ module.exports = {
     latitude: 'float',
     longitude: 'float',
     code: 'string',
+    temperature: 'float',
     tanks: {
       collection: 'tank',
       via: 'fishInside'
