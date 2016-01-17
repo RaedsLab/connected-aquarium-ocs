@@ -86,7 +86,8 @@
             <thead>
             <tr>
               <th>Name</th>
-              <th>Native</th>
+              <th>Country</th>
+              <th>Ideal Temperature</th>
               <th>Delete</th>
             </tr>
             </thead>
@@ -97,17 +98,6 @@
         </div>
       </div><!-- /.box-body -->
       <div class="box-footer">
-        <div class="row">
-          <div class="col-md-6">
-            <a class="btn btn-app" data-toggle="modal" data-target="#addTankModal">
-              <i class="fa fa-edit"></i> Add
-            </a>
-          </div>
-          <div class="col-md-6">
-
-          </div>
-        </div>
-
       </div><!-- /.box-footer-->
     </div>
 
@@ -125,8 +115,8 @@
         </div>
       </div>
 
-      <div class="box-body">
-        <div class="col-md-6">
+      <div class="box-body row">
+        <div class="col-md-5">
           <p>Current local temperature</p>
           <!--- TEMPERATURE courrante -->
           <input type="text"
@@ -140,6 +130,9 @@
                  data-angleOffset=-125
                  data-angleArc=250
           >
+        </div>
+        <div class="col-md-7">
+          <div id="sparkline"></div>
         </div>
       </div><!-- /.box-body -->
     </div>
@@ -155,6 +148,19 @@
    * Logged user
    * */
   var user = null;
+
+  /**
+   * Selected Tank Id
+   * */
+  var selectedTankId = null;
+
+  /**
+   *
+   * IF map inited
+   *
+   * **/
+  var mapInitOnce = false;
+
 
   /**
    Get URL Params
@@ -226,7 +232,6 @@
         $(".userEmailDisplay").html(user.email);
 
 
-        var mapInitOnce = false;
         $('#addTankModal').on('shown.bs.modal', function (e) {
           // do something...
           /**
@@ -320,6 +325,7 @@
    * */
   function getFishByTank(idTank) {
     $("#fishList").html(""); // empty the list
+    selectedTankId = idTank;
 
     var xhrTankResp = $.ajax({
       url: "/tank/" + idTank,
@@ -342,19 +348,45 @@
      * */
 
     $(".dialTemp").knob();
-    $(".dialTemp").val(30);
+    if (tank.temperature == null) {
+      $(".dialTemp").val(-1);
+    } else {
+      $(".dialTemp").val(tank.temperature);
+    }
 
+    /**
+     *
+     * @TODO : ajax start day and stuff
+     * @TODO format start/end duration
+     * Draw chart with light data
+     * */
+    var lightArray = [0, 20, 50, 100, 50, 20, 00];
 
+    $("#sparkline").sparkline(lightArray, {
+      type: 'line',
+      lineColor: '#ffff00',
+      lineWidth: 2,
+      width: '100%',
+      height: '100px',
+      chartRangeMin: 0,
+      chartRangeMax: 100
+    });
     /*********/
 
 
     if (tank.fishInside != undefined) {
+      if (tank.fishInside.length == 0) {
+        $("#tankNameSelect").html($("#tankNameSelect").html() + " [Empty]");
+      }
+
       tank.fishInside.forEach(function (fish) {
-        var fishListString = "<tr><td class='fishInTank' >" + fish.name + "</td><td><span class='label label-warning'>Pending</span></td>";
-        fishListString += "<td><a id='" + fish.id + "' class='btn btn-xs btn-danger btn-flat'>Remove</a></td></tr>";
+        var fishListString = "<tr><td class='fishInTank' >" + fish.name + "</td><td>" + fish.country + "</td>";
+        fishListString += "<td>" + fish.temperature + "</td>";
+        fishListString += "<td><a  onclick='deleteFishFromTank(this)' id='" + fish.id + "' class='btn btn-xs btn-danger btn-flat'>Remove</a></td></tr>";
 
         $("#fishList").append(fishListString);
       });
+
 
     } else {
       $("#fishList").html("You don't have any fish yet.");
@@ -394,6 +426,28 @@
   }
 
   /**
+   * On fish click => remove fish from tank
+   * **/
+  function deleteFishFromTank(param) {
+    if (selectedTankId == null) {
+      alert("Error tank selection, oops!");
+    }  // localhost:1337/tank/removeFish?tankId=2&fishId=1
+    //@TODO: AJAX CALL tank/removefish (tankID / Fish ID)
+
+
+    var fishId = param.getAttribute("id");
+    $.ajax({
+      url: '/tank/removeFish?tankId=' + selectedTankId + '&fishId=' + fishId,
+      type: 'GET',
+      success: function (result) {
+        $("#fishList").html(""); // empty the fish list
+        getFishByTank(selectedTankId);
+      }
+    });
+
+  }
+
+  /**
    *
    * Add a tank form JS
    * */
@@ -410,7 +464,11 @@
         /**
          * Update user tank list
          * */
-        $("#tankList").append("<li class='tank' id='" + data.id + "'>" + data.label + " [" + data.state + "]</li>");
+
+        var tankRow = "<tr><td onclick='updateFishList(this)' class='tank' id='" + data.id + "' id='ankCode'><a>" + data.code + "</a></td><td>" + data.label + "</td><td><span class='label label-warning'>" + data.state + "</span></td><td>";
+        tankRow += "<a onclick='deleteFishTank(this)' id='" + data.id + "' class='btn btn-xs btn-danger btn-flat deleteTank'>Delete</a></td></tr>";
+
+        $("#tankList").append(tankRow);
 
       });
   }

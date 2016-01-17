@@ -5,7 +5,60 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+function dump(obj) {
+  var out = '';
+  for (var i in obj) {
+    out += i + ": " + obj[i] + "\n";
+  }
+
+  console.log(out);
+}
+
 module.exports = {
+
+  removeFish: function (req, res) {
+
+    var resp = new Object();
+
+    if (req.query.tankId == undefined || req.query.fishId == undefined) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
+
+    if (req.query.tankId == null || req.query.fishId == null) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
+
+
+    Tank.findOne({id: req.query.tankId}).exec(function findOneCB(err, tank) {
+
+      //Tank not found
+      if (tank == undefined || err != null) {
+        resp["status"] = "error";
+        return res.json(resp);
+      }
+
+      // Find fish
+      Fish.findOne({id: req.query.fishId}).exec(function findOneCB(err, fish) {
+
+        //Fish not found
+        if (fish == undefined || err != null) {
+          resp["status"] = "error";
+          return res.json(resp);
+        }
+
+        tank.fishInside.remove(fish.id);
+        tank.save();
+
+        //tank.fishInside.push(fish);
+        resp["status"] = "OK";
+        return res.json(resp);
+      });
+    });
+
+
+  },
 
   addFish: function (req, res) {
     var resp = new Object();
@@ -38,7 +91,11 @@ module.exports = {
           return res.json(resp);
         }
 
-        tank.fishInside.push(fish);
+        // dump(tank.fishInside);
+
+        tank.fishInside.add(fish);
+        tank.save();
+
         resp["status"] = "OK";
         return res.json(resp);
       });

@@ -11,6 +11,7 @@ module.exports = {
     label: 'string',
     latitude: 'float',
     longitude: 'float',
+    temperature: 'float',
     state: {
       type: 'string',
       enum: ['online', 'offline', 'unreachable', 'pending'],
