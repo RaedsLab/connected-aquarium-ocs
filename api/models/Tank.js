@@ -27,7 +27,8 @@ module.exports = {
     code: {
       type: 'string',
       required: true
-    }
+    },
+    lastPing: 'datetime'
   }
 };
 

@@ -16,6 +16,36 @@ function dump(obj) {
 
 module.exports = {
 
+  ping: function (req, res) {
+
+    var resp = new Object();
+
+    if (req.query.tankCode == undefined) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
+
+    if (req.query.tankCode == null) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
+
+    Tank.findOne({code: req.query.tankCode}).exec(function findOneCB(err, tank) {
+
+      //Tank not found
+      if (tank == undefined || err != null) {
+        resp["status"] = "error";
+        return res.json(resp);
+      }
+
+      tank.lastPing = new Date();
+      tank.save();
+      resp["status"] = "ok";
+      return res.json(resp);
+    });
+
+  },
+
   removeFish: function (req, res) {
 
     var resp = new Object();
