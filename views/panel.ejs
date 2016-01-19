@@ -20,6 +20,7 @@
               <th>Code</th>
               <th>Label</th>
               <th>Status</th>
+              <th>Edit</th>
               <th>Delete</th>
             </tr>
             </thead>
@@ -34,9 +35,6 @@
       <div class="box-footer">
         <a id="addModal" class="btn btn-app" data-toggle="modal" data-target="#addTankModal">
           <i class="fa fa-edit"></i> Add
-        </a>
-        <a class="btn btn-app">
-          <i class="fa fa-repeat"></i> Refresh
         </a>
       </div><!-- /.box-footer-->
     </div>
@@ -62,6 +60,11 @@
     </div>
   </div>
 </div>
+
+
+<!-- MODAL Edit TANK -->
+<%- partial('./partials/panel/editTankModal.ejs') %>
+
 <!-- MODAL ADD TANK -->
 <%- partial('./partials/panel/addTankModal.ejs') %>
 
@@ -161,6 +164,11 @@
    * **/
   var mapInitOnce = false;
 
+  /**
+   * All user tanks
+   *
+   * */
+  var tankArray = new Object();
 
   /**
    Get URL Params
@@ -282,6 +290,7 @@
     $("#tankMsg").html("");
 
     user = getUserById(userId);
+    tankArray = user.tanks;
     if (user.tanks.length == 0) {
       $("#tankMsg").html("You don't have any configured fish-tanks.")
     } else {
@@ -310,14 +319,48 @@
             default:
               statecolorClass = "label-warning";
           }
-          var tankRow = "<tr><td onclick='updateFishList(this)' class='tank' id='" + entry.id + "' id='ankCode'><a>" + entry.code + "</a></td><td>" + entry.label + "</td><td><span class='label " + statecolorClass + "'>" + entry.state + "</span></td><td>";
-          tankRow += "<a onclick='deleteFishTank(this)' id='" + entry.id + "' class='btn btn-xs btn-danger btn-flat deleteTank'>Delete</a></td></tr>";
+
+          var tankRow = "<tr><td onclick='updateFishList(this)' class='tank' id='" + entry.id + "' id='ankCode'><a>" + entry.code + "</a></td><td>" + entry.label + "</td><td><span class='label " + statecolorClass + "'>" + entry.state + "</span></td>";
+          tankRow += "<td><a data-toggle='modal' data-target='#editTankModal' onclick='editFishTank(this)' id='" + entry.id + "' class='btn btn-xs btn-flat btn-info editTank'>Edit</a></td>";
+          tankRow += "<td><a onclick='deleteFishTank(this)' id='" + entry.id + "' class='btn btn-xs btn-danger btn-flat deleteTank'>Delete</a></td></tr>";
 
           $("#tankList").append(tankRow);
         }
       );
     }
     initMap(tankMapPoints);
+  }
+
+
+  function getTankById(tankId) {
+
+  }
+
+  /**
+   * Edit tank btn
+   *
+   * */
+  function editFishTank(param) {
+    var tankId = param.getAttribute("id");
+
+    for (i = 0; i < tankArray.length; i++) {
+      if (tankArray[i].id == tankId) {
+
+        setEditModalData(tankArray[i]);
+
+      }
+    }
+  }
+
+
+  /**
+   * Set Edit Tank modal
+   * */
+  function setEditModalData(tank) {
+    $("#editTankCode").val(tank.code);
+    $("#editTankLabel").val(tank.label);
+    $("#editTankLatitude").val(tank.latitude);
+    $("#editTankLongitude").val(tank.longitude);
   }
 
   /**
@@ -336,6 +379,9 @@
       }
     });
     var tank = xhrTankResp['responseJSON'];
+
+    // set edit modal Data
+    setEditModalData(tank);
 
     $("#tankNameSelect").html(tank.label);
     $("#tankNameDataBox").html(tank.label);
@@ -360,7 +406,7 @@
      * @TODO format start/end duration
      * Draw chart with light data
      * */
-    var lightArray = [-50,0, 20, 50, 100, 50, 20, 00];
+    var lightArray = [-50, 0, 20, 50, 100, 50, 20, 00];
 
     $("#sparkline").sparkline(lightArray, {
       type: 'line',
