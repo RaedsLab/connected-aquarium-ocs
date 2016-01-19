@@ -2,7 +2,7 @@ module.exports.schedule = {
   sailsInContext: true, //If sails is not as global and you want to have it in your task
   tasks: {
     firstTask: {
-      cron: "* * * * *",
+      cron: "* * * 1 1",
       task: function (context, sails) {
 
         sails.log("[Cron] - Checking stale tanks");
