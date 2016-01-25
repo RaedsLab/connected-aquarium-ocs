@@ -16,6 +16,39 @@ function dump(obj) {
 
 module.exports = {
 
+
+  temp: function (req, res) {
+
+    var resp = new Object();
+
+
+    var scraperjs = require('scraperjs');
+
+    var scrapUrl = "http://www.seatemperature.org/africa/tunisia/sidi-bou-said.htm";
+
+    scraperjs.StaticScraper.create(scrapUrl)
+      .scrape(function ($) {
+        return $("#sea-temperature").map(function () {
+          return $(this).text();
+        }).get();
+      })
+      .then(function (tempParse) {
+
+        tempParse = tempParse.join();
+        var temp = tempParse.split("°");
+
+        var content = temp[0].toString().replace(/\t/g, '').split('\r\n');
+        content = content.toString().replace(/\n/g, '').split('\r\n')[0];
+
+        resp["status"] = "OK";
+        resp["temp"] = parseInt(content);
+        return res.json(resp);
+
+        //  res.send(JSON.stringify(content));
+      })
+
+  },
+
   ping: function (req, res) {
 
     var resp = new Object();

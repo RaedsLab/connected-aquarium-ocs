@@ -24,6 +24,7 @@
     "sails-disk": "~0.10.0",
     "sails-hook-schedule": "^0.2.1",
     "sails-postgresql": "^0.10.17",
+    "scraperjs": "^1.2.0",
     "suncalc": "^1.7.0",
     "sync-request": "^3.0.0"
   },
