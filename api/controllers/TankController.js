@@ -21,31 +21,98 @@ module.exports = {
 
     var resp = new Object();
 
+    if (req.query.tankCode == undefined) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
 
-    var scraperjs = require('scraperjs');
+    if (req.query.tankCode == null) {
+      resp["status"] = "error";
+      return res.json(resp);
+    }
 
-    var scrapUrl = "http://www.seatemperature.org/africa/tunisia/sidi-bou-said.htm";
 
-    scraperjs.StaticScraper.create(scrapUrl)
-      .scrape(function ($) {
-        return $("#sea-temperature").map(function () {
-          return $(this).text();
-        }).get();
-      })
-      .then(function (tempParse) {
+    Tank.findOne({code: req.query.tankCode}).exec(function findOneCB(err, tank) {
 
-        tempParse = tempParse.join();
-        var temp = tempParse.split("°");
-
-        var content = temp[0].toString().replace(/\t/g, '').split('\r\n');
-        content = content.toString().replace(/\n/g, '').split('\r\n')[0];
-
-        resp["status"] = "OK";
-        resp["temp"] = parseInt(content);
+      //Tank not found
+      if (tank == undefined || err != null) {
+        resp["status"] = "error";
         return res.json(resp);
+      }
 
-        //  res.send(JSON.stringify(content));
-      })
+
+      /**
+       * Get country by lat,lon
+       */
+
+      // all is good
+      var request = require('sync-request');
+
+      var apiRes = request(
+        'GET',
+        "http://ws.geonames.org/countryCode?lat=" + tank.latitude + "&lng=" + tank.longitude + "&username=aquaocs&type=JSON"
+      );
+
+      var apiCtrNameString = apiRes.getBody();
+
+      // console.log(apiCtrNameString);
+
+      var ctrNameData = JSON.parse(apiCtrNameString);
+
+      if (ctrNameData.status != null) {
+        console.log("No man's land !");
+
+        resp["status"] = "error";
+        return res.json(resp);
+      }
+
+      /// YEY WE GOT A COUNTRY NAME !!
+      var countryName = ctrNameData.countryName;
+
+      /// LOOK for country URL in DB
+
+      Countries.findOne({countryName: countryName}).exec(function findOneCB(err, country) {
+
+        //Country not found
+        if (country == undefined || err != null) {
+          console.log("[Country] " + countryName + " Not found, plz add it to the DB !");
+          resp["status"] = "error";
+          return res.json(resp);
+        }
+
+        /// FOUND COUNTRY !!!
+        /**
+         * In CASE OF MIRACALE Execute this !!!!
+         */
+        var scraperjs = require('scraperjs');
+
+        scraperjs.StaticScraper.create(country.url)
+          .scrape(function ($) {
+            return $("#sea-temperature").map(function () {
+              return $(this).text();
+            }).get();
+          })
+          .then(function (tempParse) {
+
+            tempParse = tempParse.join();
+            var temp = tempParse.split("°");
+
+            var content = temp[0].toString().replace(/\t/g, '').split('\r\n');
+            content = content.toString().replace(/\n/g, '').split('\r\n')[0];
+
+            resp["status"] = "OK";
+            resp["temp"] = parseInt(content);
+            return res.json(resp);
+
+            //  res.send(JSON.stringify(content));
+          })
+
+
+      });
+
+
+      // update tank.temperature
+    });
 
   },
 
