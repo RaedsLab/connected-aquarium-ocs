@@ -169,7 +169,14 @@ module.exports = {
           "http://api.sunrise-sunset.org/json?lat=" + req.query.lat + "&lng=" + req.query.lng + "&formatted=0"
         );
 
+        var apiTimeZoneRes = request(
+          'GET',
+          'https://maps.googleapis.com/maps/api/timezone/json?location=31.10,121.10&timestamp=1331161200&key=AIzaSyBsCkQElzafDkjxRMroi3DDW2DetmCZcto'
+        );
+        var apiTimeString = apiTimeZoneRes.getBody();
 
+        var TimeData = JSON.parse(apiTimeString);
+        var timeZone = TimeData.timeZoneId;
         // var d = new Date(lightData.results.sunrise);
         // sails.log("Date " + d.getTime());
         var timeAndDate = new Date();
@@ -178,6 +185,7 @@ module.exports = {
         var SunCalc = require('suncalc');
 
         var lightResp = {
+          'timeZone': timeZone,
           'lightStart': lightStart,
           'lightEnd': lightEnd,
           'lightMid': lightMid,
