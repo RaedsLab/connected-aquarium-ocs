@@ -5,6 +5,13 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+var request = require('sync-request');
+
+var scraperjs = require('scraperjs');
+
+var SunCalc = require('suncalc');
+
+
 function dump(obj) {
   var out = '';
   for (var i in obj) {
@@ -46,8 +53,6 @@ module.exports = {
        */
 
       // all is good
-      var request = require('sync-request');
-
       var apiRes = request(
         'GET',
         "http://ws.geonames.org/countryCode?lat=" + tank.latitude + "&lng=" + tank.longitude + "&username=aquaocs&type=JSON"
@@ -84,7 +89,6 @@ module.exports = {
         /**
          * In CASE OF MIRACALE Execute this !!!!
          */
-        var scraperjs = require('scraperjs');
 
         scraperjs.StaticScraper.create(country.url)
           .scrape(function ($) {
@@ -97,14 +101,23 @@ module.exports = {
             tempParse = tempParse.join();
             var temp = tempParse.split("°");
 
-            var content = temp[0].toString().replace(/\t/g, '').split('\r\n');
-            content = content.toString().replace(/\n/g, '').split('\r\n')[0];
+            var temperature = temp[0].toString().replace(/\t/g, '').split('\r\n');
+            temperature = temperature.toString().replace(/\n/g, '').split('\r\n')[0];
+            temperature = parseFloat(temperature);
 
-            resp["status"] = "OK";
-            resp["temp"] = parseInt(content);
+            if (isNaN(temperature)) {
+              resp["status"] = "error";
+            } else {
+
+              // update temp in db
+              tank.temperature = temperature;
+              tank.save();
+
+              resp["status"] = "OK";
+              resp["temp"] = temperature;
+
+            }
             return res.json(resp);
-
-            //  res.send(JSON.stringify(content));
           })
 
 
@@ -248,7 +261,6 @@ module.exports = {
         lightResp["status"] = "error";
       } else {
         // all is good
-        var request = require('sync-request');
 
         var apiRes = request(
           'GET',
@@ -282,7 +294,6 @@ module.exports = {
         var timeAndDate = new Date();
         //  var moonData = SunCalc.getMoonPosition(/*Date*/ timeAndDate, /*Number*/ req.query.lat, /*Number*/ req.query.lng);
 
-        var SunCalc = require('suncalc');
 
         var lightResp = {
           'timeZone': timeZone,

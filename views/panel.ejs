@@ -206,7 +206,6 @@
    * if exists check with URL param ID
    */
   $(document).ready(function () {
-    testlightarray();
     /*** HIDE */
     $('#boxFish').hide();
     $('#aquariumData').hide();
@@ -406,7 +405,8 @@
      * @TODO format start/end duration
      * Draw chart with light data
      * */
-    var lightArray = [-50, 0, 20, 50, 100, 50, 20, 00];
+    // var lightArray = [-50, 0, 20, 50, 100, 50, 20, 00];
+    var lightArray = getlightarray(tank.latitude, tank.longitude);
 
     $("#sparkline").sparkline(lightArray, {
       type: 'line',
@@ -447,33 +447,47 @@
 
   }
 
-  function testlightarray(){
-   $.getJSON( "/tank/light?lat=31.10&lng=121.10", function( data ) {
-     var array = [];
-     var start = moment(data.lightStart);
-     var mid = moment(data.lightMid);
-     var end = moment(data.lightEnd);
-     var startTime = parseInt(start.tz(data.timeZone).format("H"))*60*60*1000 + parseInt(start.tz(data.timeZone).format("mm"))*60*1000;
-     var midTime = parseInt(mid.tz(data.timeZone).format("H"))*60*60*1000 + parseInt(mid.tz(data.timeZone).format("mm"))*60*1000;
-     var endTime = parseInt(end.tz(data.timeZone).format("H"))*60*60*1000 + parseInt(end.tz(data.timeZone).format("mm"))*60*1000;
-     var am = midTime - startTime;
-     var pm = endTime - midTime;
-     var minute = 60*1000;
-     var percentage = 0;
-     for(var time = 0;time<24*60*60*1000;time += minute){
-       if(time > startTime&&time < midTime){
-         percentage += 1/(am/minute)*100;
-       }else if(time>=midTime&&time < endTime){
-         percentage -= 1/(pm/minute)*100;
-       }else if(time>=endTime){
-         percentage = 0;
-       }
-       if(time%(60*60*1000)==0){
-         array.push(Math.round(percentage));
-       }
-     }
-     console.log(array);
-   });
+  function getlightarray(lat, lng) {
+    var array = [];
+
+    var xhrTankResp = $.ajax({
+      url: "/tank/light?lat=" + lat + "&lng=" + lng,
+      async: false,
+      dataType: 'json',
+      success: function (data) {
+        return data;
+      }
+    });
+    var data = xhrTankResp['responseJSON'];
+
+
+    data.timeZone = 'UTC'; // @TODO : get from xhr
+
+    var start = moment(data.lightStart);
+    var mid = moment(data.lightMid);
+    var end = moment(data.lightEnd);
+    var startTime = parseInt(start.tz(data.timeZone).format("H")) * 60 * 60 * 1000 + parseInt(start.tz(data.timeZone).format("mm")) * 60 * 1000;
+    var midTime = parseInt(mid.tz(data.timeZone).format("H")) * 60 * 60 * 1000 + parseInt(mid.tz(data.timeZone).format("mm")) * 60 * 1000;
+    var endTime = parseInt(end.tz(data.timeZone).format("H")) * 60 * 60 * 1000 + parseInt(end.tz(data.timeZone).format("mm")) * 60 * 1000;
+    var am = midTime - startTime;
+    var pm = endTime - midTime;
+    var minute = 60 * 1000;
+    var percentage = 0;
+    for (var time = 0; time < 24 * 60 * 60 * 1000; time += minute) {
+      if (time > startTime && time < midTime) {
+        percentage += 1 / (am / minute) * 100;
+      } else if (time >= midTime && time < endTime) {
+        percentage -= 1 / (pm / minute) * 100;
+      } else if (time >= endTime) {
+        percentage = 0;
+      }
+      if (time % (60 * 60 * 1000) == 0) {
+        array.push(Math.round(percentage));
+      }
+    }
+    console.log(array);
+    return array;
+
   }
 
   /**
