@@ -207,12 +207,12 @@ module.exports = {
     var resp = new Object();
 
     if (req.query.tankCode == undefined || req.query.fishTag == undefined) {
-      resp["status"] = "error";
+      resp["status"] = "param error";
       return res.json(resp);
     }
 
     if (req.query.tankCode == null || req.query.fishTag == null) {
-      resp["status"] = "error";
+      resp["status"] = "null param error";
       return res.json(resp);
     }
 
@@ -221,7 +221,7 @@ module.exports = {
 
       //Tank not found
       if (tank == undefined || err != null) {
-        resp["status"] = "error";
+        resp["status"] = "no tank error ";
         return res.json(resp);
       }
 
@@ -230,7 +230,7 @@ module.exports = {
 
         //Fish not found
         if (fish == undefined || err != null) {
-          resp["status"] = "error";
+          resp["status"] = "no fish error";
           return res.json(resp);
         }
 
