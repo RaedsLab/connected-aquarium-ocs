@@ -22,6 +22,7 @@
               <th>Status</th>
               <th>Edit</th>
               <th>Delete</th>
+              <th>Override</th>
             </tr>
             </thead>
             <tbody id="tankList">
@@ -319,15 +320,44 @@
               statecolorClass = "label-warning";
           }
 
+          if (entry.upnp) {
+            var upnpChacked = "checked";
+          } else {
+            var upnpChacked = "";
+          }
+
+
           var tankRow = "<tr><td onclick='updateFishList(this)' class='tank' id='" + entry.id + "' id='ankCode'><a>" + entry.code + "</a></td><td>" + entry.label + "</td><td><span class='label " + statecolorClass + "'>" + entry.state + "</span></td>";
           tankRow += "<td><a data-toggle='modal' data-target='#editTankModal' onclick='editFishTank(this)' id='" + entry.id + "' class='btn btn-xs btn-flat btn-info editTank'>Edit</a></td>";
-          tankRow += "<td><a onclick='deleteFishTank(this)' id='" + entry.id + "' class='btn btn-xs btn-danger btn-flat deleteTank'>Delete</a></td></tr>";
-
+          tankRow += "<td><a onclick='deleteFishTank(this)' id='" + entry.id + "' class='btn btn-xs btn-danger btn-flat deleteTank'>Delete</a></td>";
+          tankRow += "<td><input onclick='updateUPNP(this)' id='" + entry.id + "' class='upnpCheckbox' " + upnpChacked + " type='checkbox'/></td></tr>";
           $("#tankList").append(tankRow);
         }
       );
     }
     initMap(tankMapPoints);
+  }
+
+
+  /**
+   * On tank click => delete tank
+   */
+  function updateUPNP(param) {
+    var tankId = param.getAttribute("id");
+    var $this = $(param);
+
+    var isChecked = $this.is(':checked');
+
+    $.ajax({
+      url: '/tank/' + tankId,
+      type: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify({"upnp": isChecked}),
+      success: function (result) {
+        alert("Manual mode : " + isChecked);
+      }
+    });
+
   }
 
 
@@ -396,7 +426,16 @@
     if (tank.temperature == null) {
       $(".dialTemp").val(-1);
     } else {
-      $(".dialTemp").val(tank.temperature);
+      if (!tank.upnp) {
+        $(".dialTemp").val(tank.temperature);
+      } else {
+        /** UPNP TEMP **/
+        if (tank.upnpTemperature == null) {
+          $(".dialTemp").val(-1);
+        } else {
+          $(".dialTemp").val(tank.upnpTemperature);
+        }
+      }
     }
 
     /**
@@ -405,8 +444,23 @@
      * @TODO format start/end duration
      * Draw chart with light data
      * */
-    // var lightArray = [-50, 0, 20, 50, 100, 50, 20, 00];
-    var lightArray = getlightarray(tank.latitude, tank.longitude);
+    function fillArray(value, len) {
+      var arr = [];
+      for (var i = 0; i < len; i++) {
+        arr.push(value);
+      }
+      return arr;
+    }
+
+    if (!tank.upnp) {
+      var lightArray = getlightarray(tank.latitude, tank.longitude);
+    } else {
+      if (tank.upnpLight == null) {
+        var lightArray = fillArray(-1, 24);
+      } else {
+        var lightArray = fillArray(tank.upnpLight, 24);
+      }
+    }
 
     $("#sparkline").sparkline(lightArray, {
       type: 'line',

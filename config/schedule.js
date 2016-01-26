@@ -11,7 +11,7 @@ module.exports.schedule = {
         Tank.find()
           .exec(function (err, tankList) {
 
-            for (tank of tankList) {
+            for (tank in tankList) {
 
               if (tank.state == "online" && (now - tank.lastPing) > 600000) { // if > 10 min
                 sails.log("[Cron] - Inactive Tank " + tank.id);

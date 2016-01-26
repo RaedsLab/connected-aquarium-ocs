@@ -28,7 +28,13 @@ module.exports = {
       type: 'string',
       required: true
     },
-    lastPing: 'datetime'
+    lastPing: 'datetime',
+    upnp: {
+      type: 'boolean',
+      defaultsTo: false
+    },
+    upnpTemperature: 'float',
+    upnpLight: 'float'
   }
 };
 
