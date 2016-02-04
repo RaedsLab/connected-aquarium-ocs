@@ -1,8 +1,18 @@
-/*module.exports.schedule = {
+function dump(obj) {
+  var out = '';
+  for (var i in obj) {
+    out += i + ": " + obj[i] + "\n";
+  }
+  console.log(out);
+}
+
+
+module.exports.schedule = {
   sailsInContext: true, //If sails is not as global and you want to have it in your task
   tasks: {
     firstTask: {
-      cron: "0 * * * *",
+	// sunday
+      cron: "* * * * 0",
       task: function (context, sails) {
 
         sails.log("[Cron] - Checking stale tanks");
@@ -22,13 +32,12 @@
             } else {
               tank.state = "online";
             }
-            tank.save();
+            dump(tank);
           }
 
         })
       },
       context: {}
     }
-  }
+  } 
 };
-*/
