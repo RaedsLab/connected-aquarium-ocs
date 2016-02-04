@@ -1,4 +1,4 @@
-module.exports.schedule = {
+/*module.exports.schedule = {
   sailsInContext: true, //If sails is not as global and you want to have it in your task
   tasks: {
     firstTask: {
@@ -8,20 +8,27 @@ module.exports.schedule = {
         sails.log("[Cron] - Checking stale tanks");
         var now = new Date();
 
-        Tank.find()
-          .exec(function (err, tankList) {
+        Tank.find().exec(function (err, tankList) {
+          if (err != null) {
+            console.error("ERROR SCHED !");
+          }
 
-            for (tank in tankList) {
+          console.log(JSON.stringify(tankList));
 
-              if (tank.state == "online" && (now - tank.lastPing) > 600000) { // if > 10 min
-                sails.log("[Cron] - Inactive Tank " + tank.id);
-                tank.state = "offline";
-                tank.save();
-              }
+           for (tank in tankList) {
+            if ((now - tank.lastPing) > 600000) { // if > 10 min
+              sails.log("[Cron] - Inactive Tank " + tank.id);
+              tank.state = "offline";
+            } else {
+              tank.state = "online";
             }
-          })
+            tank.save();
+          }
+
+        })
       },
       context: {}
     }
   }
 };
+*/
