@@ -32,7 +32,7 @@ module.exports.schedule = {
             } else {
               tank.state = "online";
             }
-            dump(tank);
+           // dump(tank);
           }
 
         })
