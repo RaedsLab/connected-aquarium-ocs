@@ -77,7 +77,9 @@
 
     <div id="boxFish" class="box collapsed-box">
       <div class="box-header with-border">
-        <h3 class="box-title">My Fish | <span id="tankNameSelect"></span></h3>
+        <h3 class="box-title">My Fish | <span id="tankNameSelect"></span>
+          <span id="notCompatibleFish" class="label label-danger">Fish is not compatible</span>
+        </h3>
         <div class="box-tools pull-right">
           <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i
               class="fa fa-minus"></i></button>
@@ -113,6 +115,8 @@
     <div id="aquariumData" class="box collapsed-box">
       <div class="box-header with-border">
         <h3 id="tankNameDataBox" class="box-title">AQUARIUM_NAME</h3>
+        <span id="notCompatibleTank" class="label label-danger">Tank is not compatible with fish</span>
+
         <div class="box-tools pull-right">
           <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i
               class="fa fa-minus"></i></button>
@@ -210,6 +214,9 @@
     /*** HIDE */
     $('#boxFish').hide();
     $('#aquariumData').hide();
+    $('#notCompatibleFish').hide();
+    $('#notCompatibleTank').hide();
+
 
     var loginCookie = $.cookie("userId");
     if (loginCookie != undefined) {
@@ -397,6 +404,9 @@
    * */
   function getFishByTank(idTank) {
     $("#fishList").html(""); // empty the list
+    $('#notCompatibleTank').hide();
+    $('#notCompatibleFish').hide();
+
     selectedTankId = idTank;
 
     var xhrTankResp = $.ajax({
@@ -478,14 +488,37 @@
         $("#tankNameSelect").html($("#tankNameSelect").html() + " [Empty]");
       }
 
+      var compatibleFish = true;
+      var compatibleTank = true;
+
+      var fishTempList = Array();
       tank.fishInside.forEach(function (fish) {
         var fishListString = "<tr><td class='fishInTank' >" + fish.name + "</td><td>" + fish.country + "</td>";
         fishListString += "<td>" + fish.temperature + "</td>";
         fishListString += "<td><a  onclick='deleteFishFromTank(this)' id='" + fish.id + "' class='btn btn-xs btn-danger btn-flat'>Remove</a></td></tr>";
+        fishTempList.push(fish.temperature);
 
         $("#fishList").append(fishListString);
       });
 
+      var last = null;
+      fishTempList.forEach(function (temp) {
+        if (Math.abs(temp - last) > 5) {
+          compatibleFish = false;
+        }
+        if (Math.abs(temp - tank.temperature) > 5) {
+          compatibleTank = false;
+        }
+        last = temp;
+      });
+
+      if (!compatibleFish) {
+        $('#notCompatibleFish').show();
+      }
+
+      if (!compatibleTank) {
+        $('#notCompatibleTank').show();
+      }
 
     } else {
       $("#fishList").html("You don't have any fish yet.");
