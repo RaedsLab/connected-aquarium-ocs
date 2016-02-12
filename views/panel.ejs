@@ -512,9 +512,14 @@
         last = temp;
       });
 
-      if (!compatibleFish) {
-        $('#notCompatibleFish').show();
+      if (fishTempList.length <= 1) {
+        $('#notCompatibleFish').hide();
+      } else {
+        if (!compatibleFish) {
+          $('#notCompatibleFish').show();
+        }
       }
+
 
       if (!compatibleTank) {
         $('#notCompatibleTank').show();
